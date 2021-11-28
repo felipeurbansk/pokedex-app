@@ -2,11 +2,10 @@
 import styled from 'styled-components'
 import { ReactComponent as PokeballIcon } from '../../assets/images/pokeball.svg'
 import { ReactComponent as DownIcon } from '../../assets/images/down.svg'
-import { ReactComponent as SearchIcon } from '../../assets/images/search.svg'
 
 import Container from '../../components/Container'
 // import Header from '../../components/Header'
-
+import PokemonList from '../../components/PokemonList'
 function Main() {
     return (
         <Container>
@@ -23,6 +22,7 @@ function Main() {
             <StyledSearch>
                 <StyledInputSearch placeholder="Procurar"></StyledInputSearch>
             </StyledSearch>
+            <PokemonList/>
         </Container>
     )
 }
@@ -70,9 +70,7 @@ const StyledSearch = styled.div`
     padding: 17px 0;
 `
 
-const StyledInputSearch = styled.input.attrs(props => ({
-    type: 'text'
-}))`
+const StyledInputSearch = styled.input`
     width: 100%;
     padding: 6px 0px;
     border-radius: 8px;
