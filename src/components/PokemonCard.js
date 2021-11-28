@@ -9,11 +9,18 @@ function PokemonCard({index, pokemon}) {
         async function fetch() {
             await api.get(`pokemon/${index + 1}`).then((response) => {
                 setPokemonData(response.data)
+                console.log("Pokemon")
+                console.log(response.data)
                 return response;
             }).catch((err) => {
                 console.log({err})
-            }).then((response) => {
-                console.log({response: response.data})
+            }).then(async (response) => {
+                await api.get(`/berry/${index + 1}`)
+                    .then(result => {
+                        console.log({result: result.data})
+                    }).catch(err => {
+                        console.log({err})
+                    })
             })
         }   
         fetch()
@@ -97,6 +104,7 @@ StyledFooter.defaultProps = {
         primary: '#74CB48'
     }
 }
+
 const StyledPokemonName = styled.p`
     text-transform: capitalize;
     color: #FFF;

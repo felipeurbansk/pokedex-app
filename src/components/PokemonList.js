@@ -14,11 +14,7 @@ function PokemonList({children}) {
     async function fetch() {
       await api.get('/pokemon?limit=12')
         .then((response) => {
-          if(typeof response.data.results !== 'undefined' && response.data.results.length > 0) {
-            setPokemons(response.data.results)
-            setTotalPokemons(response.data.count)
-            setNextRequestUrl(response.data.next)
-          }
+          savePokemons(response)
         }).catch((err) => {
           console.log({err})
         })
@@ -26,23 +22,75 @@ function PokemonList({children}) {
     fetch();
   }, [])
 
-  return (
-    <StyledList>
-      {
-        pokemons &&
-        pokemons.map((pokemon, index) => (
-          <PokemonCard key={index} index={index} pokemon={pokemon}/>
-        ))
+  async function getMore() {
+    await api.get(nextRequestUrl)
+      .then(response => {
+        savePokemons(response)
+      }).catch(err => {
+        console.log({err})
+      })
+  }
+
+  function savePokemons(response) {
+    if(typeof response.data.results !== 'undefined' && response.data.results.length > 0) {
+      if(pokemons && pokemons.length > 0) {
+        setPokemons([...pokemons, ...response.data.results])
+      } else {
+        setPokemons(response.data.results)
+        setTotalPokemons(response.data.count)
       }
-    </StyledList>
+      setNextRequestUrl(response.data.next)
+    }
+  }
+
+  return (
+    <PokemonListBody>
+      <List>
+        {
+          pokemons &&
+          pokemons.map((pokemon, index) => (
+            <PokemonCard key={index} index={index} pokemon={pokemon}/>
+          ))
+        }
+      </List>
+      <Button onClick={getMore}>Carregar mais</Button>
+    </PokemonListBody>
+    
 
   )
 }
 export default PokemonList;
 
-const StyledList = styled.div`
+
+const PokemonListBody = styled.div`
+  overflow-y: scroll;
+  padding-bottom: 18px;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`
+
+const List = styled.div`
   display: flex;
   flex-wrap: wrap;
   width: 100%;
   justify-content: left;
 `
+
+const Button = styled.button`
+  width: 100%;
+  padding: 5px 0;
+  margin-top: 3px;
+  font-size: ${props => props.font_size};
+  color: ${props => props.color};
+  background-color: ${props => props.background };
+  text-transform: uppercase;
+  border: none;
+  pointer-events: painted;
+`
+Button.defaultProps = {
+  background: '#78A6B5',
+  color: '#FFF',
+  font_size: '12px',
+}
